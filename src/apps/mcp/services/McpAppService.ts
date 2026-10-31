@@ -3,7 +3,11 @@ import { App } from '@waha/apps/app_sdk/dto/app.dto';
 import { IAppService } from '@waha/apps/app_sdk/services/IAppService';
 import { PluginOptions } from '@waha/core/abc/session.plugin';
 import { AppRepository } from '@waha/apps/app_sdk/storage/AppRepository';
-import { McpAppConfig } from '@waha/apps/mcp/dto/config.dto';
+import { McpAppConfig, McpToolsPreset } from '@waha/apps/mcp/dto/config.dto';
+import {
+  normalizeMcpToolNames,
+  unknownMcpToolNames,
+} from '@waha/apps/mcp/tools/policy';
 import { SessionManager } from '@waha/core/abc/manager.abc';
 import { ApiKeyService } from '@waha/core/services/ApiKeyService';
 import { WhatsappSession } from '@waha/core/abc/session.abc';
@@ -22,6 +26,25 @@ export class McpAppService implements IAppService {
     }
     delete app.config.key_id;
     delete app.config.key;
+    if (!app.config.toolsPreset) {
+      app.config.toolsPreset = McpToolsPreset.all;
+    }
+    if (app.config.tools) {
+      for (const raw of app.config.tools) {
+        if (typeof raw !== 'string' || raw.trim() === '') {
+          throw new UnprocessableEntityException(
+            'MCP tool names must be non-empty strings',
+          );
+        }
+      }
+      app.config.tools = normalizeMcpToolNames(app.config.tools);
+      const unknown = unknownMcpToolNames(app.config.tools);
+      if (unknown.length > 0) {
+        throw new UnprocessableEntityException(
+          `Unknown MCP tool names: ${unknown.join(', ')}`,
+        );
+      }
+    }
   }
 
   async beforeCreated(app: App<McpAppConfig>): Promise<void> {
