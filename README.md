@@ -26,6 +26,7 @@
     + [5. Get the screenshot](#5-get-the-screenshot)
     + [6. Send a text message](#6-send-a-text-message)
   * [What is next?](#what-is-next)
+- [MCP](#mcp)
 - [Development](#development)
   * [Start the project](#start-the-project)
 
@@ -135,6 +136,12 @@ curl -d "{\"chatId\": \"${PHONE}@c.us\", \"text\": \"Hello from WhatsApp HTTP AP
 
 ## What is next?
 [Go and read the full documentation!](https://waha.devlike.pro/docs/overview/introduction/)
+
+# MCP
+
+WAHA serves a stateless Model Context Protocol endpoint at `POST /mcp`
+(`X-Api-Key`). How to connect Cursor and Grok, including Cloudflare Access:
+[docs/mcp-clients.md](docs/mcp-clients.md).
 
 # Development
 
